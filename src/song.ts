@@ -1,15 +1,4 @@
-export const getSong = (animals: string[]) => {
-  const prev = [];
-  const rows = animals.reduce((rows, animal, index) => {
-    prev.push(animal);
-    return [...rows, ...getVers(index, animal, prev.slice(0, -1)), ""];
-  }, []);
-  rows.push("There was an old lady who swallowed a horse...");
-  rows.push(`...She's dead, of course!`);
-  return rows.join("\n").trim();
-};
-
-const HLASKY = [
+const EXCLAMATIONS = [
   "",
   "That wriggled and wiggled and tickled inside her.",
   "How absurd to swallow a bird.",
@@ -18,24 +7,49 @@ const HLASKY = [
   `I don't know how she swallowed a cow!`,
 ];
 
-function getVers(index, animal, previousAnimals): string[] {
-  const rows = [
-    `There was an old lady who swallowed a ${animal}${index === 0 ? "." : ";"}`,
-  ];
+const LAST_VERSE = [
+  `There was an old lady who swallowed a horse...`,
+  `...She's dead, of course!`,
+];
 
-  const hlaska = HLASKY[index];
-  hlaska && rows.push(hlaska);
+const FIRST_ROW = `There was an old lady who swallowed a`;
 
-  let prevPrevAnimal = animal;
-  for (const i in previousAnimals.reverse()) {
-    const prevAnimal = previousAnimals[i];
+const LAST_ROW = `I don't know why she swallowed a fly - perhaps she'll die!`;
+
+const MAIN_ROW = `She swallowed the $1 to catch the $2`;
+
+export function getSong(allAnimals: string[]): string {
+  let animals = [];
+  let verses = [];
+
+  allAnimals.forEach((animal, index) => {
+    animals = [...animals, animal];
+    verses = [...verses, ...getVerse(index, animal, animals.slice(0, -1)), ""];
+  });
+
+  return [...verses, ...LAST_VERSE].join("\n").trim();
+}
+
+function getVerse(
+  index: number,
+  currentAnimal: string,
+  allAnimals: string[]
+): string[] {
+  const punctuation = index === 0 ? "." : ";";
+  const rows = [`${FIRST_ROW} ${currentAnimal}${punctuation}`];
+
+  const exclamation = EXCLAMATIONS[index];
+  exclamation && rows.push(exclamation);
+
+  let prevAnimal = currentAnimal;
+  allAnimals.reverse().forEach((animal, index) => {
+    const punctuation = index === allAnimals.length - 1 ? ";" : ",";
     rows.push(
-      `She swallowed the ${prevPrevAnimal} to catch the ${prevAnimal}${
-        parseInt(i) === previousAnimals.length - 1 ? ";" : ","
-      }`
+      MAIN_ROW.replace("$1", prevAnimal).replace("$2", animal) + punctuation
     );
-    prevPrevAnimal = prevAnimal;
-  }
-  rows.push(`I don't know why she swallowed a fly - perhaps she'll die!`);
-  return rows;
+
+    prevAnimal = animal;
+  });
+
+  return [...rows, LAST_ROW];
 }
