@@ -1,42 +1,53 @@
-export const getSong = () => `
-  There was an old lady who swallowed a fly.
-  I don't know why she swallowed a fly - perhaps she'll die!
+export function getHuntingLine(hunter: string, prey: string): string {
+  return `She swallowed the ${hunter} to catch the ${prey}`;
+}
 
-  There was an old lady who swallowed a spider;
-  That wriggled and wiggled and tickled inside her.
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+export function getVerse(animals: string[]): string {
+  const huntingLines = animals.map((animal, index) => {
+    if (animals[index + 2]) {
+      return getHuntingLine(animals[index + 1], animal) + ",\n";
+    }
+    if (animals[index + 1]) {
+      return getHuntingLine(animals[index + 1], animal);
+    }
+    return ";\n";
+  });
 
-  There was an old lady who swallowed a bird;
-  How absurd to swallow a bird.
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+  const huntingLinesString = huntingLines.reduce((line, acc) => {
+    return line + acc;
+  }, "");
 
-  There was an old lady who swallowed a cat;
-  Fancy that to swallow a cat!
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+  const verseStart = `There was an old lady who swallowed a ${
+    animals[animals.length - 1]
+  };\nI don't know how she swallowed a ${animals[animals.length - 1]}!\n`;
+  const verseEnd = `I don't know why she swallowed a ${animals[0]} - perhaps she'll die!\n\n`;
 
-  There was an old lady who swallowed a dog;
-  What a hog, to swallow a dog!
-  She swallowed the dog to catch the cat,
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+  return verseStart + huntingLinesString + verseEnd;
+}
 
-  There was an old lady who swallowed a cow;
-  I don't know how she swallowed a cow!
-  She swallowed the cow to catch the dog,
-  She swallowed the dog to catch the cat,
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+export function getBody(animals: string[]) {
+  if (animals.length === 1) {
+    return "";
+  }
 
-  There was an old lady who swallowed a horse...
-  ...She's dead, of course!
-`
+  const verse = getVerse(animals);
+
+  animals.pop();
+
+  return getBody(animals) + verse;
+}
+
+export function getStart(animal: string): string {
+  return `There was an old lady who swallowed a ${animal}.\nI don't know why she swallowed a ${animal} - perhaps she'll die!\n\n`;
+}
+
+export function getEnd(animal: string): string {
+  return `There was an old lady who swallowed a ${animal}...\n...She's dead, of course!`;
+}
+
+export function getSong(animals: string[]): string {
+  const start = getStart(animals[0]);
+  const end = getEnd(animals[animals.length - 1]);
+  const body = getBody(animals);
+  return start + body + end;
+}
