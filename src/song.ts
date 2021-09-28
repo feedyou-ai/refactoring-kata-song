@@ -1,42 +1,49 @@
-export const getSong = () => `
-  There was an old lady who swallowed a fly.
-  I don't know why she swallowed a fly - perhaps she'll die!
+export type Animal = {
+	name: string,
+	lineWhenSwallowed: string,
+}
 
-  There was an old lady who swallowed a spider;
-  That wriggled and wiggled and tickled inside her.
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+const getSwallowReason = (predatorName: string, preyName: string) => {
+ return `She swallowed the ${predatorName} to catch the ${preyName}`
+}
 
-  There was an old lady who swallowed a bird;
-  How absurd to swallow a bird.
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+const getLastArrayMember = <T>(arr: T[]): T => arr[arr.length-1]
 
-  There was an old lady who swallowed a cat;
-  Fancy that to swallow a cat!
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+export const getVerse = (animals: Animal[], trailingVerseLine: string) => {
+	const lastAnimal = getLastArrayMember(animals)
+	const reverseIndices = animals.map((animal, index) => index).reverse()
+	
+	if(animals.length === 1) {
+		return `There was an old lady who swallowed a ${lastAnimal.name}.\n${trailingVerseLine}`
+	}
+	
+	const getSwallowReasonLine = (animalIdx: number) => {
+		const predator = animals[animalIdx]
+		const prey = animals[animalIdx -1]
+		if(!prey) return null
+		
+		return `${getSwallowReason(predator.name, prey.name)}`
+	}
+	
+	const getFirstLinePunctuationMark = () => {
+		if(animals.length === 1) return '.'
+		return ';'
+	}
+	
+	return `There was an old lady who swallowed a ${lastAnimal.name}${getFirstLinePunctuationMark()}\n` +
+		`${lastAnimal.lineWhenSwallowed}\n`+
+		`${reverseIndices.map(getSwallowReasonLine).slice(0,-1).join(',\n')};\n` +
+		trailingVerseLine
+}
 
-  There was an old lady who swallowed a dog;
-  What a hog, to swallow a dog!
-  She swallowed the dog to catch the cat,
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
+export const getAllVerses = (animals: Animal[], trailingVerseLine: string) => {
+	return animals
+		.map((animal, index) => animals.slice(0,index+1))
+		.map((animalsForVerse) => getVerse(animalsForVerse, trailingVerseLine))
+		.join('\n\n')
+}
 
-  There was an old lady who swallowed a cow;
-  I don't know how she swallowed a cow!
-  She swallowed the cow to catch the dog,
-  She swallowed the dog to catch the cat,
-  She swallowed the cat to catch the bird,
-  She swallowed the bird to catch the spider,
-  She swallowed the spider to catch the fly;
-  I don't know why she swallowed a fly - perhaps she'll die!
-
-  There was an old lady who swallowed a horse...
-  ...She's dead, of course!
-`
+export const getSong = (animals: Animal[], trailingVerseLine: string, lastVerse: string) => {
+	return`${getAllVerses(animals, trailingVerseLine)}\n\n${lastVerse}`
+	
+}
