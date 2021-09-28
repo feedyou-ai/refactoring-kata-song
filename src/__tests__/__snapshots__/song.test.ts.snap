@@ -1,6 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`song getSong returns some string 1`] = `
+exports[`song getSong returns for one animal 1`] = `
+"There was an old lady who swallowed a bug.
+I don't know why she swallowed a fly - perhaps she'll die!
+
+There was an old lady who swallowed a horse...
+...She's dead, of course!"
+`;
+
+exports[`song getSong returns song for default animals 1`] = `
 "There was an old lady who swallowed a fly.
 I don't know why she swallowed a fly - perhaps she'll die!
 
